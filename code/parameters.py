@@ -50,10 +50,10 @@ NOMINAL_PARAMS = {
     "PASSENGER_DEMAND_GROWTH": 0.0,  # Cumulative passenger OD growth relative to baseline; 0.20 means +20%.
     "PASSENGER_DEMAND_GROWTH_Y40": 0.20,  # Nominal final passenger-demand growth.
     "PT_ASC_SHIFT": 0.0,  # Additive preference shift for both PT access modes (utility units, not percent).
-    "PT_ASC_SHIFT_Y40": 0.10,  # Nominal final PT preference shift (utility units).
+    "PT_ASC_SHIFT_Y40": 0.2,  # Nominal final PT preference shift (utility units).
     "BIKE_ASC_SHIFT": 0.0,  # Additive preference shift for standalone cycling (utility units).
     # "BIKE_ASC_SHIFT_Y40": 0.20,  # Optional nominal final cycling preference shift (utility units).
-    "EBIKE_SHARE": 0.25,  # Baseline e-bike fraction of cycling and PT bicycle access/egress trips (0 to 1).
+    "EBIKE_SHARE": 0.35,  # Baseline e-bike fraction of cycling and PT bicycle access/egress trips (0 to 1).
     "EBIKE_SHARE_Y40": 0.50,  # Nominal final e-bike share.
     "EBIKE_SPEED_MULTIPLIER": 1.5,  # E-bike speed divided by conventional-bike speed; 1.5 means 50% faster.
     "ROAD_FREIGHT_GROWTH": 0.0,  # Growth in prepared commercial/freight vehicles and their synthetic uplift.
@@ -78,7 +78,7 @@ NOMINAL_PARAMS = {
     # -------------------------------------------------------------------------
     # PT service, section comfort capacity and train supply
     # -------------------------------------------------------------------------
-    "PT_HEADWAY_BASELINE": 20.0,  # Baseline interval between PT services (minutes).
+    "PT_HEADWAY_BASELINE": 15.0,  # Baseline interval between PT services (minutes).
     # Package headway reductions and capacity increases are configured in stages.py.
     # Section comfort thresholds (persons/peak hour).
     # Adopted 120,000-passenger daily count * PT peak share; thresholds do not grow with demand.
@@ -110,9 +110,9 @@ NOMINAL_PARAMS = {
     # Health rates apply to standalone cycling/walking person-km, including e-bikes.
     # The PT rate applies once per person-trip, including supplementary PT passengers.
     # Positive rates reduce societal costs; omitted rates default to zero.
-    # "BENEFIT_HEALTH_BIKE_PER_KM": 1.0,  # Cycling health benefit (CHF/person-km).
-    # "BENEFIT_HEALTH_WALK_PER_KM": 1.0,  # Walking health benefit (CHF/person-km).
-    # "BENEFIT_SOCIOECONOMIC_PT_PER_TRIP": 1.0,  # Additional PT benefit (CHF/person-trip).
+     "BENEFIT_HEALTH_BIKE_PER_KM": 1.0,  # Cycling health benefit (CHF/person-km).
+     "BENEFIT_HEALTH_WALK_PER_KM": 2.5,  # Walking health benefit (CHF/person-km).
+     "BENEFIT_SOCIOECONOMIC_PT_PER_TRIP": 2.0,  # Additional PT benefit (CHF/person-trip).
 
     # -------------------------------------------------------------------------
     # Physical CO2 emissions and their common monetary value
@@ -155,7 +155,7 @@ NOMINAL_PARAMS = {
     # -------------------------------------------------------------------------
     # Performance requirements and strategic mode-share indicators
     # -------------------------------------------------------------------------
-    "MAX_AVG_TT": 15.0,  # Acceptability ceiling for peak car/PT in-vehicle time plus car delay (min/trip).
+    "MAX_AVG_TT": 30.0,  # Acceptability ceiling for peak car/PT in-vehicle time plus car delay (min/trip).
     "PT_SHARE_TARGET": 0.35,  # Teaching minimum for PT share of strategic passenger-km; baseline is about 31.9%.
     "MIN_STRATEGIC_PKM_DISTANCE": 5.0,  # Minimum OD distance for strategic mode-share indicators (km); not an appraisal cutoff.
 
@@ -317,7 +317,7 @@ STRUCTURAL_UNCERTAINTIES = {  # Distributions for selected general parameters; n
         "use": "scenarios",
         "transient": True,
         "distribution": "triangular",
-        "minimum": -0.20,
+        "minimum": -0.50,
         "maximum": 0.50,
     },
     "PT_ASC_SHIFT": {  # Final additive PT preference shift; negative values reduce PT attractiveness.
@@ -325,7 +325,7 @@ STRUCTURAL_UNCERTAINTIES = {  # Distributions for selected general parameters; n
         "use": "scenarios",
         "transient": True,
         "distribution": "triangular",
-        "minimum": -0.10,
+        "minimum": -0.20,
         "maximum": 0.30,
     },
     # Uncomment together with BIKE_ASC_SHIFT_Y40 above to include cycling preferences.
@@ -341,8 +341,8 @@ STRUCTURAL_UNCERTAINTIES = {  # Distributions for selected general parameters; n
         "category": "transport_modelling",
         "use": "scenarios",
         "transient": True,
-        "distribution": "triangular",
-        "minimum": 0.35,
+       "distribution": "triangular",
+       "minimum": 0.1,
         "maximum": 0.80,
     },
     "ROAD_FREIGHT_GROWTH": {  # Final prepared-background growth; sigma is in growth-fraction units.
@@ -368,31 +368,32 @@ STRUCTURAL_UNCERTAINTIES = {  # Distributions for selected general parameters; n
         "minimum": 31.91,
         "maximum": 53.18,
     },
-    "CO2_VALUE_CHF_PER_TONNE": {  # Draw the reference-year value once (constant 2019 CHF/tonne CO2).
-        # Triangular mode is the general reference value; the engine applies
-        # CO2_VALUE_ANNUAL_GROWTH from CO2_REFERENCE_YEAR to each appraisal year.
-        "category": "post_modelling",
-        "use": "sensitivity",
-        "transient": False,
-        "distribution": "triangular",
-        "minimum": 70.0,
-        "maximum": 217.0,
-    },
-    "CAR_CO2_KG_PER_VEHICLE_KM": {  # Final car emissions (kg CO2/vehicle-km); sigma is relative to its nominal endpoint.
-        "category": "post_modelling",
-        "use": "scenarios",
-        "transient": True,
-        "distribution": "normal",
-        "sigma": 0.15,
-        "relative_sigma": True,
-    },
+    #"CO2_VALUE_CHF_PER_TONNE": {  # Draw the reference-year value once (constant 2019 CHF/tonne CO2).
+    #    # Triangular mode is the general reference value; the engine applies
+    #    # CO2_VALUE_ANNUAL_GROWTH from CO2_REFERENCE_YEAR to each appraisal year.
+    #    "category": "post_modelling",
+    #    "use": "sensitivity",
+    #    "transient": False,
+    #    "distribution": "triangular",
+    #    "minimum": 70.0,
+    #    "maximum": 217.0,
+    #},
+    #"CAR_CO2_KG_PER_VEHICLE_KM": {  # Final car emissions (kg CO2/vehicle-km); sigma is relative to its nominal endpoint.
+     #   "category": "post_modelling",
+    #    "use": "scenarios",
+     #   "transient": True,
+      #  "distribution": "normal",
+    #    "sigma": 0.15,
+    #    "relative_sigma": True,
+    #},
     "NUMBER_OF_PEAK_HOURS": {  # Sensitivity: equally likely 3, 4 or 5 peak hours, constant over time.
         "category": "post_modelling",
         "use": "sensitivity",
         "transient": False,
         "distribution": "uniform",
-        "minimum": 3,
-        "maximum": 5,
+        "minimum": 2, #changed to 2
+        "maximum": 8, #changed to 8 (orginal of 5 seems a little low, with crazy population and development 
+        # peak hours could be much more common)
         "integer": True,
     },
     "OPEX_MULTIPLIER": {  # Operating-cost multiplier, sampled once per future.
@@ -400,33 +401,33 @@ STRUCTURAL_UNCERTAINTIES = {  # Distributions for selected general parameters; n
         "use": "scenarios",
         "transient": False,
         "distribution": "uniform",
-        "minimum": 0.50,
-        "maximum": 1.50,
+        "minimum": 0.75,
+        "maximum": 1.5,
     },
     "CAPEX_MULTIPLIER": {  # Construction/option-cost multiplier; sampled once per future.
         "category": "post_modelling",
         "use": "scenarios",
         "transient": False,
         "distribution": "triangular",
-        "minimum": 0.80,
-        "maximum": 1.20,
+        "minimum": 0.90,
+        "maximum": 2.5,
     },
-    "ACCIDENT_COST_MULTIPLIER": {  # Final road/rail accident-cost factor.
-        "category": "post_modelling",
-        "use": "scenarios",
-        "transient": True,
-        "distribution": "normal",
-        "sigma": 0.15,
-        "relative_sigma": True,
-    },
-    "LOCAL_AIR_COST_MULTIPLIER": {  # Final road/rail local air-pollution cost factor.
-        "category": "post_modelling",
-        "use": "scenarios",
-        "transient": True,
-        "distribution": "normal",
-        "sigma": 0.15,
-        "relative_sigma": True,
-    },
+    #"ACCIDENT_COST_MULTIPLIER": {  # Final road/rail accident-cost factor.
+    #    "category": "post_modelling",
+    #   "use": "scenarios",
+    #   "transient": True,
+    #   "distribution": "normal",
+    #   "sigma": 0.15,
+    #   "relative_sigma": True,
+    #},
+    #"LOCAL_AIR_COST_MULTIPLIER": {  # Final road/rail local air-pollution cost factor.
+    #    "category": "post_modelling",
+    #   "use": "scenarios",
+    #   "transient": True,
+     #   "distribution": "normal",
+    #    "sigma": 0.15,
+     #   "relative_sigma": True,
+    #},
 }
 
 # Validate settings and prepare internal surrogate metadata.
