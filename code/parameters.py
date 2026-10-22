@@ -390,7 +390,7 @@ STRUCTURAL_UNCERTAINTIES = {  # Distributions for selected general parameters; n
         "category": "post_modelling",
         "use": "sensitivity",
         "transient": False,
-        "distribution": "uniform",
+        "distribution": "normal",
         "minimum": 2, #changed to 2
         "maximum": 8, #changed to 8 (orginal of 5 seems a little low, with crazy population and development 
         # peak hours could be much more common)
@@ -400,7 +400,7 @@ STRUCTURAL_UNCERTAINTIES = {  # Distributions for selected general parameters; n
         "category": "post_modelling",
         "use": "scenarios",
         "transient": False,
-        "distribution": "uniform",
+        "distribution": "triangular",
         "minimum": 0.75,
         "maximum": 1.5,
     },
