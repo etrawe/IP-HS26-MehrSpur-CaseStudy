@@ -58,7 +58,7 @@ def validate_case_study(project_root: str | Path = ROOT) -> dict:
         "state_headways_min": {stage: stages.stage_headway(stage) for stage in stage_ids},
         "state_section_savings_min": {stage: stage_specs[stage]["section_time_saving_min"] for stage in stage_ids},
         "construction_emissions_tonnes": {name: stages.construction_emissions_tonnes(name)
-                                          for name in ("stations", "tunnel")},
+                                          for name in (1, 2)},
         "plans": list(ap.PLANS),
         "transport_gp_inputs": list(uc.TRANSPORT_SURROGATE_INPUTS),
         "scenario_uncertainties": uc.select_uncertainties(use="scenarios"),
