@@ -23,16 +23,25 @@ from additional import notebook_exports as exports
 
 def readiness_message(status: pd.DataFrame) -> str:
     """Return a styled HTML readiness callout for notebook display."""
-    missing = status.loc[status["required"] & ~status["present"], "relative_path"].tolist()
-    if not missing:
+    unavailable = status.loc[status["required"] & ~status["present"]]
+    if unavailable.empty:
         return (
             "<div style='padding:10px;border-left:5px solid #2e7d32;background:#edf7ed'>"
             "<b>Transport model ready.</b> 1,223 Canton Zürich zones and skims loaded.</div>"
         )
-    items = "".join(f"<li><code>{value}</code></li>" for value in missing)
+    items = "".join(
+        f"<li><code>{row.relative_path}</code> — {row.availability}</li>"
+        for row in unavailable.itertuples()
+    )
+    has_lfs_pointers = unavailable["availability"].eq("Git LFS pointer").any()
+    recovery = (
+        "Install Git LFS if needed, then run <code>git lfs pull</code> from the repository root."
+        if has_lfs_pointers else
+        "Restore the missing prepared inputs before continuing."
+    )
     return (
         "<div style='padding:10px;border-left:5px solid #c47f00;background:#fff8e1'>"
-        f"<b>Missing prepared inputs:</b><ul>{items}</ul></div>"
+        f"<b>Prepared transport inputs are unavailable:</b><ul>{items}</ul>{recovery}</div>"
     )
 
 

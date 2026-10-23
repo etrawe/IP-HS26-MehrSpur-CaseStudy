@@ -348,11 +348,20 @@ def transport_input_status(project_root: str | Path) -> pd.DataFrame:
     ]
 
     status = pd.DataFrame(rows, columns=["item", "path", "required", "purpose"])
-    status["present"] = status["path"].map(lambda p: Path(p).exists())
+    def availability(path: Path) -> str:
+        if not path.is_file():
+            return "Missing"
+        with path.open("rb") as handle:
+            if handle.readline().rstrip(b"\r\n") == b"version https://git-lfs.github.com/spec/v1":
+                return "Git LFS pointer"
+        return "Ready"
+
+    status["availability"] = status["path"].map(availability)
+    status["present"] = status["availability"].eq("Ready")
     status["relative_path"] = status["path"].map(
         lambda p: str(Path(p).relative_to(root)) if Path(p).is_relative_to(root) else str(p)
     )
-    return status[["item", "required", "present", "relative_path", "purpose"]]
+    return status[["item", "required", "present", "availability", "relative_path", "purpose"]]
 
 
 def readiness_flags(status: pd.DataFrame) -> dict[str, bool]:
@@ -530,8 +539,14 @@ def load_transport_context(
     flags = readiness_flags(status)
 
     if require_mode_choice and not flags["mode_choice"]:
-        missing = status.loc[status["required"] & ~status["present"], "relative_path"]
-        raise FileNotFoundError("Missing prepared transport inputs: " + ", ".join(missing.astype(str)))
+        unavailable = status.loc[status["required"] & ~status["present"]]
+        paths = ", ".join(unavailable["relative_path"].astype(str))
+        if unavailable["availability"].eq("Git LFS pointer").any():
+            raise FileNotFoundError(
+                "Prepared transport inputs are missing or still Git LFS pointers: "
+                f"{paths}. Install Git LFS if needed, then run `git lfs pull` from the repository root."
+            )
+        raise FileNotFoundError("Missing prepared transport inputs: " + paths)
 
     model_dir = root / "code" / "transport_core"
     prepared_dir = root / "data" / "transport" / "prepared"
