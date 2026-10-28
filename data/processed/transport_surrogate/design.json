@@ -11,9 +11,9 @@
     },
     "points_added": 0,
     "final_holdout_metrics": {
-      "weighted_rmse_min": 44.620104016844294
+      "weighted_rmse_min": 0.167723838476929
     },
-    "target_reached": false
+    "target_reached": true
   },
   "seed": 42,
   "records": [
@@ -1460,7 +1460,7 @@
   ],
   "cache_contract": {
     "format_version": 3,
-    "model_fingerprint": "a22320e3fcdf77706402",
+    "model_fingerprint": "741096a1c72d40fb740b",
     "reference_equations": "228b499fae505d4d98a8",
     "solver_settings": {
       "stopping_rule": "road_relative_gap",
@@ -1659,7 +1659,8 @@
         "Wald (ZH)",
         "Wetzikon (ZH)",
         "Zollikon",
-        "Zumikon"
+        "Zumikon",
+        "Z\u00fcrich"
       ],
       "zone_ids": []
     },
@@ -2009,7 +2010,7 @@
     "prepared_inputs": {
       "data/transport/config/mode_choice.json": "b099f6dbfe7c3f2b0f72868ccb0598a0a4b7653ea34cf37a85e1ad1111f13d85",
       "cache/tmi_context.pkl": "0c83d5e840b655f539c4a12b422d6b0c4e42fadcd3df70fb29e724e22e6f3d68",
-      "data/processed/MehrForch_noZH.pkl": "fa672c3f9be0d0a058a128926723d2b55ace41e9bb9cea8ebb31cd87020951a2"
+      "data/processed/MehrForch.pkl": "01f74b17a9e24901dfb3daef994a33b9c466f4f5315a01f9ce3bbc132f9658ec"
     },
     "reference_equations": {
       "code/transport_model_interface.py:_corridor_shortest_time_table": "9c201bf9565b607f2fb26c5dd5aadfeebcbaffbae24c46fd62bbd2e663c8dd23",
@@ -2170,9 +2171,9 @@
     "code/additional/transport_display.py": "717abe3ebf42393540e7c7a80a1e985f81a1dce35e6c7446c22836fab6cd3f58",
     "code/additional/trigger_optimization.py": "18fd8b4300761ee47476fe47a22997badda310de88cb47b9d05cce6e9a3f5135",
     "code/additional/uncertainty.py": "c4e276867e04948dbd5adcab14a653106bb729ae8a8e3dfe7c6161c34303dfdc",
-    "code/parameters.py": "822ab0e9edbddf73e27ff37683faf29b50b767899a1707124217939b8068ce0c",
+    "code/parameters.py": "5e3aec5254965f10f7af04f1a6d224ad067f203874848c4485b22649f719fa1f",
     "code/simulation_engine.py": "72b0f369364272978048a5fa3ddabab7c47355766ffffe7ec6c7b00cef844a8e",
-    "code/stages.py": "50019733a6cc09b725d2bd389f78458da3063089a8f6a18a0ad3b6f12d79de2b",
+    "code/stages.py": "2d7d64c98b878210ae15dafb16058492ad207780e636b714165e423627147a3d",
     "code/surrogate_model/__init__.py": "e14f9360129c8a8d333cee6c7b17230d83b71c55fd9c2e467149a28a44948039",
     "code/surrogate_model/build_transport_surrogate.py": "69e2f0c6f52dc75ee547d7ac6d2cebe79d1243044a98b6ab80bf729135113d63",
     "code/surrogate_model/od_gp.py": "9b82a8b74e117e2c49ed4082ea44752153894071bb7d09088534abcf2dc6879c",
@@ -2201,9 +2202,9 @@
     "code/additional/transport_display.py": "717abe3ebf42393540e7c7a80a1e985f81a1dce35e6c7446c22836fab6cd3f58",
     "code/additional/trigger_optimization.py": "18fd8b4300761ee47476fe47a22997badda310de88cb47b9d05cce6e9a3f5135",
     "code/additional/uncertainty.py": "c4e276867e04948dbd5adcab14a653106bb729ae8a8e3dfe7c6161c34303dfdc",
-    "code/parameters.py": "822ab0e9edbddf73e27ff37683faf29b50b767899a1707124217939b8068ce0c",
+    "code/parameters.py": "5e3aec5254965f10f7af04f1a6d224ad067f203874848c4485b22649f719fa1f",
     "code/simulation_engine.py": "72b0f369364272978048a5fa3ddabab7c47355766ffffe7ec6c7b00cef844a8e",
-    "code/stages.py": "50019733a6cc09b725d2bd389f78458da3063089a8f6a18a0ad3b6f12d79de2b",
+    "code/stages.py": "2d7d64c98b878210ae15dafb16058492ad207780e636b714165e423627147a3d",
     "code/surrogate_model/__init__.py": "e14f9360129c8a8d333cee6c7b17230d83b71c55fd9c2e467149a28a44948039",
     "code/surrogate_model/build_transport_surrogate.py": "69e2f0c6f52dc75ee547d7ac6d2cebe79d1243044a98b6ab80bf729135113d63",
     "code/surrogate_model/od_gp.py": "9b82a8b74e117e2c49ed4082ea44752153894071bb7d09088534abcf2dc6879c",

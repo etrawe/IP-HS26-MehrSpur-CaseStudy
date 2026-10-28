@@ -383,7 +383,7 @@ COMBINED_EFFECTS = {
         "combined_capital_costs_chf": 38_717_000,       # CHF 23.745M (Pkg 1) + CHF 14.972M (Pkg 2 Synergy)
         "blended_lifetime_years": 70,                   # Weighted lifetime horizon
         "blended_capital_share": 0.70,                  # Weighted civil capital share (70%)
-        "total_construction_co2_tonnes": 7_200.0        # Combined Scope 3 construction carbon (5,000t + 2,200t)
+        "total_construction_co2_tonnes": 7_200.0        # Combined scope 3 construction carbon (5,000t + 2,200t)
     },
     "effects_outside_model": [
         "Land-use efficiency: freeing surface land for high-value Transit-Oriented Development by subterranean parking co-location",
