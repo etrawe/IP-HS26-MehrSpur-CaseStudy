@@ -194,7 +194,7 @@ PACKAGES = {
     "package_1": 
     {
         "name": "Package 1: Forch Central Mobility Hub Transformation",
-        "description": "Underground garage, new station square, bus terminal, and micro-mobility hub at Bahnhofsraum Mitte.",
+        "description": "Underground garage, new station square, bus terminal, e-buses and their charging infrastructure at microscale around the station",
         
         # Hub & Node Interventions
         "mobility_hubs": [
