@@ -69,21 +69,21 @@ SIGNPOSTS = {
 }
 
 DEFAULT_TRIGGERS = {
-    # Trigger 1: Section demand -> package 1 (local stations and access)
+    # Trigger 1: Section demand -> package 1 (Central Mobility Hub)
     "trigger1": {
         "signpost":        "pt_trips",
         "threshold":       125_000,
         "persistence":     2,       # Consecutive years above threshold
         "lead_time":       6,       # Years of planning and station civil works
     },
-    # Trigger 2: The same section count -> package 2 (Brüttenertunnel)
-    # An absolute daily count keeps the signpost comparable when stations add
+    # Trigger 2: Section demand -> package 2 (Active Feeder Network)
+    # An absolute daily count keeps the signpost comparable when package 1 adds
     # capacity. The action threshold is separate from comfort capacity.
     "trigger2": {
         "signpost":        "pt_trips",
         "threshold":       122_000,
         "persistence":     2,
-        # Years of tunnel planning and construction after the decision.
+        # Years of planning and construction after the decision.
         "lead_time":       10,
     }
 }
@@ -94,9 +94,9 @@ DEFAULT_TRIGGERS = {
 # =============================================================================
 # Packages and transport states are different. Edit named packages here:
 #   initial_packages lists the packages already open in Year 1.
-#   stations and tunnel specify when to add the respective package.
+#   The package-1 and package-2 rules specify when to add each package.
 # Internally these combinations map to transport states: 0 = baseline,
-# 1 = stations only, 2 = tunnel only, 3 = both packages. Either package can
+# 1 = package 1 only, 2 = package 2 only, 3 = both packages. Either package can
 # open first; adding the other produces state 3.
 #
 # Transition examples:
@@ -114,74 +114,39 @@ DEFAULT_TRIGGERS = {
 PLAN_DEFINITIONS = {
     "baseline": {
         "name": "Baseline Network",
-        "initial_packages": [], 
-        "underground garage": None, 
-                                    "central station square": None, "bus terminal": None,
-                                    "e-buses": None, "e-bus charging infrastructure": None,
-                                    "2.5 km cycleway network":None,
-                                   "2 grade-separated bridges":None, 
-                                   "200-spot hybrid bike facility":None, 
-                                   "e-bike charging infrastructure":None, 
-                                   "8 district Tempo 30 zones":None
+        "initial_packages": [],
+        "stations": None,
+        "tunnel": None,
     },
     "static1": {
         "name": "Static 1: Forch Central Mobility Hub Transformation",
-        "initial_packages": ["underground garage",
-                             "new station square",
-                             "bus terminal",
-                             "e-buses",
-                             "e-bus charging infrastructure"
-                             ],
-                              "underground garage": None, 
-                                                          "central station square": None, "bus terminal": None,
-                                                          "e-buses": None, "e-bus charging infrastructure": None,
-                                                          "2.5 km cycleway network":None,
-                                                         "2 grade-separated bridges":None, 
-                                                         "200-spot hybrid bike facility":None, 
-                                                         "e-bike charging infrastructure":None, 
-                                                         "8 district Tempo 30 zones":None
+        "initial_packages": ["stations"],
+        "stations": None,
+        "tunnel": None,
     },
     "static2": {
         "name": "Static 2: First-Mile / Last-Mile Active Feeder Network",
-        "initial_packages": ["underground garage",
-                             "new station square",
-                             "bus terminal",
-                             "e-buses",
-                             "e-bus charging infrastructure",
-                             "2.5 km cycleway network",
-                             "2 grade-separated bridges", 
-                             "200-spot hybrid bike facility", 
-                             "e-bike charging infrastructure", 
-                             "8 district Tempo 30 zones"
-                             ], 
-                             "underground garage": None, 
-                             "central station square": None, "bus terminal": None,
-                             "e-buses": None, "e-bus charging infrastructure": None,
-                             "2.5 km cycleway network":None,
-                            "2 grade-separated bridges":None, 
-                            "200-spot hybrid bike facility":None, 
-                            "e-bike charging infrastructure":None, 
-                            "8 district Tempo 30 zones":None
+        "initial_packages": ["stations", "tunnel"],
+        "stations": None,
+        "tunnel": None,
     },
-
-
     "staged1": {
-        "name": "Staged 1: Forch Central Mobility Hub Transformation",
+        "name": "Staged 1",
         "initial_packages": [],
-        "underground garage": {"type": "fixed", "opening_year": 8},
-        "new station square": {"type": "fixed", "opening_year": 11},
+        "stations": {"type": "fixed", "opening_year": 8},
+        "tunnel": {"type": "fixed", "opening_year": 11},
     },
     "staged2": {
-        "name": "Staged 2: Forch Central Mobility Hub Transformation",
+        "name": "Staged 2",
         "initial_packages": [],
-        "underground garage": {"type": "fixed", "opening_year": 6},
-        "new station square": {"type": "fixed", "opening_year": 15},
+        "stations": {"type": "fixed", "opening_year": 6},
+        "tunnel": {"type": "fixed", "opening_year": 15},
     },
     "flexible": {
         "name": "Flexible",
         "initial_packages": [],
-        "underground garage": {"type": "trigger", "trigger": "trigger1"},
-        "new station square": {"type": "trigger", "trigger": "trigger2"},
+        "stations": {"type": "trigger", "trigger": "trigger1"},
+        "tunnel": {"type": "trigger", "trigger": "trigger2"},
     },
 }
 
@@ -346,7 +311,10 @@ def _describe_plan(spec: dict) -> str:
     parts = []
     if spec["initial_stage"]:
         parts.append(f"{stages.STATE_LABELS[spec['initial_stage']]} from Year 1")
-    for key, package in (("to1", "Stations"), ("to2", "Tunnel")):
+    for key, package in (
+        ("to1", stages.PACKAGES["package_1"]["name"]),
+        ("to2", stages.PACKAGES["package_2"]["name"]),
+    ):
         transition = spec[key]
         if transition is None:
             continue
