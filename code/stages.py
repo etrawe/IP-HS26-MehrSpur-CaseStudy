@@ -205,10 +205,11 @@ PACKAGES = {
                     {"municipality_name": "Maur"}
                 ],
                 "effects": {
-                    "access_time_reduction_pct": 0.0,
-                    "transfer_time_reduction_pct": 20.0,    # Seamless transfers at new central square (compact cross-platform terminal)
-                    "egress_time_reduction_pct": 0.0,
-                    "wait_time_reduction_pct": 5.0,         # Synchronized bus & rail timetables
+                    # larger Stage 1 intervention parameters - Jin's recommendation
+                    "access_time_reduction_pct": 15.0,
+                    "transfer_time_reduction_pct": 25.0,    # Seamless transfers at new central square (compact cross-platform terminal)
+                    "egress_time_reduction_pct": 1.0,
+                    "wait_time_reduction_pct": 20.0,         # Synchronized bus & rail timetables
                 }
             }
         ],
@@ -246,8 +247,8 @@ PACKAGES = {
             ],
             "effects": {
                 # Direct platform-level bike parking & curbless plaza access cuts terminal delay
-                "access_time_reduction_pct": 12.0,
-                "egress_time_reduction_pct": 12.0
+                "access_time_reduction_pct": 20.0,
+                "egress_time_reduction_pct": 20.0
             }
         }
     ],
@@ -368,10 +369,10 @@ COMBINED_EFFECTS = {
                 {"municipality_name": "Zumikon"}  # Added Zumikon catchment zone
             ],
             "effects": {
-                "transfer_time_reduction_pct": 5.0,  # Total transfer = 25% (20% Pkg 1 + 5% Synergy)
-                "access_time_reduction_pct": 2.0,    # Total access = 12% (10% Pkg 2 + 2% Synergy)
-                "egress_time_reduction_pct": 2.0,    # Total egress = 12% (10% Pkg 2 + 2% Synergy)
-                "wait_time_reduction_pct": 0.0,
+                "transfer_time_reduction_pct": 10.0,  # Total transfer = 25% (20% Pkg 1 + 5% Synergy)
+                "access_time_reduction_pct": 5.0,    # Total access = 12% (10% Pkg 2 + 2% Synergy)
+                "egress_time_reduction_pct": 5.0,    # Total egress = 12% (10% Pkg 2 + 2% Synergy)
+                "wait_time_reduction_pct": 10.0,
             }
         }
     ],

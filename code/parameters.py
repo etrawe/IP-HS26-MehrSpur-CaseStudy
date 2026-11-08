@@ -240,26 +240,27 @@ DETAILED_NETWORK_FILE = "data/processed/MehrForch.pkl"  # Example: "data/process
 # Use `python code/additional/section_flows.py --help` for preparation/calibration.
 # Omit SECTION and EXTERNAL_FLOW for projects that do not use this feature.
 SECTION_DEFAULTS = {  # Generic fallback settings; configure the project's SECTION below.
-    "active": False,                      # Enable route coverage and section-specific appraisal.
-    "mode": "PT",                         # PT, CAR, BIKE or WALK
-    "origin": {},                         # {"municipality_name": "X"} or {"zone_ids": [...]}
-    "destination": {},                    # Destination selector for reference section travel time.
-    "both_directions": True,              # Count both directions and use both reference OD directions.
-    "coverage_file": None,                # None uses an automatically regenerated cache.
-    "crowding_enabled": False,            # this version values crowding only for PT
+   "active": False,                      # Enable route coverage and section-specific appraisal.
+   "mode": "PT",                         # PT, CAR, BIKE or WALK
+   "origin": {},                         # {"municipality_name": "X"} or {"zone_ids": [...]}
+   "destination": {},                    # Destination selector for reference section travel time.
+   "both_directions": True,              # Count both directions and use both reference OD directions.
+   "coverage_file": None,                # None uses an automatically regenerated cache.
+   "crowding_enabled": True,            # this version values crowding only for PT
 }
 SECTION = {  # Active project section and endpoints used for its travel-time reference.
-    **SECTION_DEFAULTS,
-    "active": False,                      # Include this count and its effects in model/appraisal outputs.
-    "kind": "pt_approach",                # PT station approach, cycling route or individual PT stop.
-    "station": "Winterthur",              # Station whose approach is counted.
-    "towards": "Effretikon",              # Select the side facing this station, including express services.
-    "coverage_file": "data/processed/section_coverage.npz",  # Supplied example; refreshed if inputs or definition change.
-    "mode": "PT",                         # Mode using this section; must match an enabled external flow.
-    "origin": {"municipality_name": "Zürich"},  # Origin of the modeled travel-time reference.
-    "destination": {"municipality_name": "Winterthur"},  # Destination of that reference.
-    "crowding_enabled": False,            # Value extra PT discomfort using the section comfort threshold.
+   **SECTION_DEFAULTS,
+   "active": True,                      # Include this count and its effects in model/appraisal outputs.
+   "kind": "pt_stop",                # PT station approach, cycling route or individual PT stop.
+   "station": "Forch",              # Station whose approach is counted.
+  # "towards": "Effretikon",              # Select the side facing this station, including express services.
+   "coverage_file": "data/processed/section_coverage.npz",  # Supplied example; refreshed if inputs or definition change.
+   "mode": "PT",                         # Mode using this section; must match an enabled external flow.
+   #"origin": {"municipality_name": "Forch"},  # Origin of the modeled travel-time reference.
+   #"destination": {"municipality_name": "Zürich"},  # Destination of that reference.
+   "crowding_enabled": False,            # Value extra PT discomfort using the section comfort threshold.
 }
+
 
 # Alternative definitions (replace SECTION above; disable PT crowding for these).
 # Disable EXTERNAL_FLOW below, or calibrate a new cohort of the matching mode:
@@ -270,27 +271,29 @@ SECTION = {  # Active project section and endpoints used for its travel-time ref
 # A stop reports access, egress and represented walking transfers separately.
 # Same-platform train changes cannot all be identified from the routing inputs.
 
+
 # An optional existing passenger flow, separate from modeled OD demand.
 # Mode defaults to the selected section's mode. These passengers affect
 # appraisal but not mode choice or road assignment.
 # Enter ONE fixed baseline additional count, then grow it explicitly. The calibration
 # script in NB02 reports a suggested residual without editing this configuration.
 EXTERNAL_FLOW_DEFAULTS = {  # Generic fallback; configure the project's EXTERNAL_FLOW below.
-    "enabled": False,                     # Include an existing supplementary cohort in appraisal.
-    "mode": None,                         # Inherit SECTION.mode; no separate mode-choice response.
-    "additional_trips_daily": 0.0,        # Existing person-trips/weekday missing from the retained model.
-    "growth": "general",                  # "general" demand growth or "fixed"
+   "enabled": False,                     # Include an existing supplementary cohort in appraisal.
+   "mode": None,                         # Inherit SECTION.mode; no separate mode-choice response.
+   "additional_trips_daily": 0.0,        # Existing person-trips/weekday missing from the retained model.
+   "growth": "general",                  # "general" demand growth or "fixed"
 }
 EXTERNAL_FLOW = {  # One cohort shared by baseline and projects, added after mode choice.
-    **EXTERNAL_FLOW_DEFAULTS,
-    "enabled": False,                     # Include this cohort's time costs and PT comfort loading.
-    "mode": "PT",                         # Existing PT passengers; must match SECTION.mode.
-    # One-time nominal Stage-0 calibration (25% e-bikes; 2% road-gap target):
-    # 120,000 target - 66,891.950467 modeled passengers/day, both directions.
-    # Winterthur approach towards Effretikon; connectivity-refined road network.
-    # Keep this cohort fixed across alternatives; only general demand growth applies.
-    "additional_trips_daily": 53_108.0495332632,  # Baseline supplementary person-trips/day, both directions.
+   **EXTERNAL_FLOW_DEFAULTS,
+   "enabled": False,                     # Include this cohort's time costs and PT comfort loading.
+   "mode": "PT",                         # Existing PT passengers; must match SECTION.mode.
+   # One-time nominal Stage-0 calibration (25% e-bikes; 2% road-gap target):
+   # 120,000 target - 66,891.950467 modeled passengers/day, both directions.
+   # Winterthur approach towards Effretikon; connectivity-refined road network.
+   # Keep this cohort fixed across alternatives; only general demand growth applies.
+   "additional_trips_daily": 53_108.0495332632,  # Baseline supplementary person-trips/day, both directions.
 }
+
 
 
 # =============================================================================
