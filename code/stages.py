@@ -209,7 +209,8 @@ PACKAGES = {
                     "access_time_reduction_pct": 15.0,
                     "transfer_time_reduction_pct": 25.0,    # Seamless transfers at new central square (compact cross-platform terminal)
                     "egress_time_reduction_pct": 1.0,
-                    "wait_time_reduction_pct": 20.0,         # Synchronized bus & rail timetables
+                    "initial_wait_reduction_pct": 15.0,
+                    "transfer_wait_reduction_pct": 20.0
                 }
             }
         ],
@@ -372,7 +373,8 @@ COMBINED_EFFECTS = {
                 "transfer_time_reduction_pct": 10.0,  # Total transfer = 25% (20% Pkg 1 + 5% Synergy)
                 "access_time_reduction_pct": 5.0,    # Total access = 12% (10% Pkg 2 + 2% Synergy)
                 "egress_time_reduction_pct": 5.0,    # Total egress = 12% (10% Pkg 2 + 2% Synergy)
-                "wait_time_reduction_pct": 10.0,
+                "initial_wait_reduction_pct": 10.0,
+                "transfer_wait_reduction_pct": 10.0,
             }
         }
     ],
