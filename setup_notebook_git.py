@@ -1,8 +1,10 @@
 """One-time git setup for Jupyter notebooks in this repository.
 
-Run once per clone, from the repository root, with the Python you use for the notebooks:
-
-    python setup_notebook_git.py
+Run once per clone. It can be started from anywhere, e.g.:
+- VS Code: open this file and click "Run Python File" (triangle, top right)
+- a Jupyter notebook cell in notebooks/:   %run ../setup_notebook_git.py
+- a terminal:                              python path/to/setup_notebook_git.py
+Use the same Python environment / kernel you run the notebooks with.
 
 It installs nbstripout and nbdime and registers them in this clone's .git/config:
 - nbstripout (clean filter): on commit, removes execution counts and cell/notebook
@@ -13,11 +15,14 @@ The matching rules (*.ipynb filter/diff/merge, LF line endings) live in .gitattr
 
 import subprocess
 import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent  # folder containing this script = repository root
 
 
 def run(*args: str) -> None:
     print("+", " ".join(args))
-    subprocess.run(args, check=True)
+    subprocess.run(args, check=True, cwd=REPO)
 
 
 python = sys.executable.replace("\\", "/")

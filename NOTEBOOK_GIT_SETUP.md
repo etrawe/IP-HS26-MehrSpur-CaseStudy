@@ -14,10 +14,20 @@ are never changed — only what gets committed is cleaned.
    ```
    If the pull conflicts on a notebook, see "Resolving a notebook conflict" below.
 
-2. From the repository root, with the Python environment you use for the notebooks:
-   ```bash
-   python setup_notebook_git.py
-   ```
+2. Run `setup_notebook_git.py` once. It is in the top-level project folder (the one that
+   contains `README.md`, `code/` and `notebooks/`). Pick whichever way is easiest:
+
+   - **From a notebook (easiest):** open any notebook in `notebooks/`, add a new cell, run
+     ```python
+     %run ../setup_notebook_git.py
+     ```
+     and then delete the cell again. This automatically uses the same Python as your notebooks.
+   - **VS Code:** open `setup_notebook_git.py` and click the ▶ "Run Python File" button
+     (top right). Make sure the selected interpreter (bottom right) is the one your notebooks use.
+   - **Terminal:** `python path/to/IP-HS26-MehrSpur-CaseStudy/setup_notebook_git.py`
+     (works from any folder).
+
+   It should end with `Done. Notebook commits from this clone are now stripped of metadata.`
    This installs `nbstripout` and `nbdime` and registers them in your `.git/config`
    (git never shares this config, which is why every person must run it once).
 
