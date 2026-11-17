@@ -288,3 +288,7 @@ If you encounter a problem with setup or an analysis:
 3. Contact the teaching assistants with your operating system, Python version, notebook section or failing command, complete error traceback and what you already tried.
 
 Deadlines and deliverables are defined in the released exercise sheets and communicated through the course channels.
+
+## Notebook git setup
+
+Before committing notebooks, run `python setup_notebook_git.py` once per clone. See [NOTEBOOK_GIT_SETUP.md](NOTEBOOK_GIT_SETUP.md).

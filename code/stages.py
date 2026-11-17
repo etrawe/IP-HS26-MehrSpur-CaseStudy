@@ -161,34 +161,8 @@ from math import isfinite
 # =============================================================================
 
 PACKAGES = {
-    # --- Package 0: Baseline Condition ---
-    "package_0": 
-    {
-        "name": "Stage 0: Baseline Network Condition",
-        "description": "Current baseline network without infrastructure or service modifications.",
-        "mobility_hubs": 
-        [
-            {
-                "name": "Baseline Condition",
-                "zones": [
-                    {"municipality_name": "Küsnacht (ZH)"},
-                    {"municipality_name": "Maur"}
-                ],
-                "effects": {
-                    "access_time_reduction_pct": 0.0,
-                    "transfer_time_reduction_pct": 0.0,
-                    "egress_time_reduction_pct": 0.0,
-                    "wait_time_reduction_pct": 0.0,
-                }
-            }
-        ],
-        "appraisal": {
-            "capital_cost_chf": 0,
-            "lifetime_years": 80, #set to 80 years for consistency, but no investment is made in the baseline
-            "capital_share": 0.0,
-            "construction_co2_tonnes": 0.0,
-        },
-    },
+    # Stage 0 (baseline) is assembled directly in _assemble_stages() with no interventions,
+    # so no "package_0" entry is needed (the model never read one).
 
     # --- Package 1: Central Mobility Hub ---
     "package_1": 
@@ -200,15 +174,13 @@ PACKAGES = {
         "mobility_hubs": [
             {
                 "name": "Forch Central Hub (Bahnhofsraum Mitte)",
-                "zones": [
-                    {"municipality_name": "Küsnacht (ZH)"},
-                    {"municipality_name": "Maur"}
-                ],
+                "zones": ["15401012"],  # Forch station zone (recommendation from Orlando)
+                "stops_per_zone": 8,
                 "effects": {
                     # larger Stage 1 intervention parameters - Jin's recommendation
                     "access_time_reduction_pct": 15.0,
                     "transfer_time_reduction_pct": 25.0,    # Seamless transfers at new central square (compact cross-platform terminal)
-                    "egress_time_reduction_pct": 1.0,
+                    "egress_time_reduction_pct": 10.0, #Stage 1 is half of stage 2 egress
                     "initial_wait_reduction_pct": 15.0,
                     "transfer_wait_reduction_pct": 20.0
                 }
@@ -241,11 +213,8 @@ PACKAGES = {
     "mobility_hubs": [
         {
             "name": "Forch Catchment Feeder Access (Hub & Interface)",
-            "zones": [
-                {"municipality_name": "Küsnacht (ZH)"},
-                {"municipality_name": "Maur"},
-                {"municipality_name": "Zumikon"}
-            ],
+            "zones": ["15401012"],  # Forch station zone (recommendation from Orlando)
+            "stops_per_zone": 8,
             "effects": {
                 # Direct platform-level bike parking & curbless plaza access cuts terminal delay
                 "access_time_reduction_pct": 20.0,
@@ -255,29 +224,34 @@ PACKAGES = {
     ],
 
     # 2. Dedicated Active Infrastructure (Option A: High-Impact Grade-Separated Corridors)
+    # bike_highways only change door-to-door bike trips (here: to/from the Forch station zone).
+    # Cycling to the train (PT with bike access) is captured by the hub's
+    # access/egress_time_reduction_pct above, which acts on access_pt_bike/egress_pt_bike.
     "bike_highways": 
     [
         {
             "name": "Segment A: Aesch/Scheuren (Maur) Overpass Link",
             "description": "0.9 km cycleway + Overpass Bridge crossing Maurstrasse",
             "area_pairs": [
-                {"origin": {"grid_id": "19501001"}, "destination": {"grid_id": "19501002"}}
+                # Each segment now ends in the Forch station zone (15401012).
+                {"origin": {"grid_id": "19501001"}, "destination": {"grid_id": "15401012"}},
+                {"origin": {"grid_id": "19501002"}, "destination": {"grid_id": "15401012"}}
             ],
             "both_directions": True,
             "effects": {
-                "speed_increase_pct": 18.0,            # High speed gain from grade-separated overpass
-                "travel_time_reduction_pct": 15.0      # Eliminates signal/traffic wait time at Maurstrasse
+                # Single effect only: speed_increase_pct and travel_time_reduction_pct multiply.
+                "travel_time_reduction_pct": 15.0      # Grade-separated overpass, no wait at Maurstrasse
             }
         },
         {
             "name": "Segment B: Kaltenstein Underpass Link",
             "description": "1.0 km cycleway + Underpass Link under A52 highway",
             "area_pairs": [
-                {"origin": {"grid_id": "15401001"}, "destination": {"grid_id": "15401002"}}
+                {"origin": {"grid_id": "15401001"}, "destination": {"grid_id": "15401012"}},
+                {"origin": {"grid_id": "15401002"}, "destination": {"grid_id": "15401012"}}
             ],
             "both_directions": True,
             "effects": {
-                "speed_increase_pct": 15.0,            # Bypasses highway ramp conflicts
                 "travel_time_reduction_pct": 12.0      # Direct continuous routing under A52
             }
         },
@@ -285,12 +259,11 @@ PACKAGES = {
             "name": "Segment C: Zumikon Feeder Corridor (Alte Forchstrasse)",
             "description": "0.6 km dedicated cycleway along Alte Forchstrasse corridor",
             "area_pairs": [
-                {"origin": {"grid_id": "16001001"}, "destination": {"grid_id": "19501002"}}
+                {"origin": {"grid_id": "16001001"}, "destination": {"grid_id": "15401012"}}
             ],
             "both_directions": True,
             "effects": {
-                "speed_increase_pct": 12.0,            # Dedicated right-of-way speed gain
-                "travel_time_reduction_pct": 10.0      # Uninterrupted feeder flow past local traffic
+                "travel_time_reduction_pct": 10.0      # Dedicated right-of-way past local traffic
             }
         }
     ],
@@ -306,7 +279,7 @@ PACKAGES = {
                     "OSM_206187043_206187046_0",
                 ],
                 "effects": {
-                    "speed_increase_pct": -20.0,       # 50 km/h -> 30 km/h speed limit reduction
+                    "speed_increase_pct": -40.0,       # 50 km/h -> 30 km/h = -40 %
                     "capacity_increase_pct": -5.0
                 }
             },
@@ -318,7 +291,7 @@ PACKAGES = {
                     "OSM_469826369_80014366_0",
                 ],
                 "effects": {
-                    "speed_increase_pct": -20.0,
+                    "speed_increase_pct": -40.0,
                     "capacity_increase_pct": -5.0
                 }
             },
@@ -332,7 +305,7 @@ PACKAGES = {
                     "OSM_217302787_4071360703_0",
                 ],
                 "effects": {
-                    "speed_increase_pct": -20.0,
+                    "speed_increase_pct": -40.0,
                     "capacity_increase_pct": -5.0
                 }
             }
@@ -359,38 +332,36 @@ PACKAGES = {
 # =============================================================================
 # 2. COMBINED-ONLY BENEFITS & SYNERGIES
 # =============================================================================
-# Synergistic effects & CAPEX savings active only when BOTH Package 1 and Package 2 are combined
+# Synergistic effects active only when BOTH Package 1 and Package 2 are combined (Stage 3).
+# Stage 3 = Package 1 + Package 2 + COMBINED_EFFECTS; this is the state used by plan "static2".
 COMBINED_EFFECTS = {
     "mobility_hubs": [
         {
             "name": "Forch Integrated Hub Synergies",
-            "zones": [
-                {"municipality_name": "Küsnacht (ZH)"},
-                {"municipality_name": "Maur"},
-                {"municipality_name": "Zumikon"}  # Added Zumikon catchment zone
-            ],
+            "zones": ["15401012"],  # Forch station zone (course recommendation)
+            "stops_per_zone": 8,
             "effects": {
-                "transfer_time_reduction_pct": 10.0,  # Total transfer = 25% (20% Pkg 1 + 5% Synergy)
-                "access_time_reduction_pct": 5.0,    # Total access = 12% (10% Pkg 2 + 2% Synergy)
-                "egress_time_reduction_pct": 5.0,    # Total egress = 12% (10% Pkg 2 + 2% Synergy)
-                "initial_wait_reduction_pct": 10.0,
-                "transfer_wait_reduction_pct": 10.0,
+                # Hub reductions are applied one after another, so they MULTIPLY:
+                # total = 1 - (1 - a)(1 - b)(1 - c). Totals below are for Stage 3 / static2
+                # (Package 1 hub x Package 2 hub x this synergy hub).
+                "transfer_time_reduction_pct": 10.0,  # Total: 1 - 0.75*0.90           = 32.5 % (P1 25 %, synergy 10 %)
+                "access_time_reduction_pct": 5.0,     # Total: 1 - 0.85*0.80*0.95      = 35.4 % (P1 15 %, P2 20 %, synergy 5 %)
+                "egress_time_reduction_pct": 5.0,     # Total: 1 - 0.99*0.80*0.95      = 24.8 % (P1 1 %, P2 20 %, synergy 5 %)
+                "initial_wait_reduction_pct": 10.0,   # Total: 1 - 0.85*0.90           = 23.5 % (P1 15 %, synergy 10 %)
+                "transfer_wait_reduction_pct": 10.0,  # Total: 1 - 0.80*0.90           = 28.0 % (P1 20 %, synergy 10 %)
             }
         }
     ],
     
-    # Financial & physical synergy deltas applied to combined appraisal
-    "synergies": 
-    {
-        "underground_shell_capex_savings_chf": 72_800,  # Reduced shell rate (1.65k -> 1.0k/m2 for 112 m2)
-        "combined_capital_costs_chf": 38_717_000,       # CHF 23.745M (Pkg 1) + CHF 14.972M (Pkg 2 Synergy)
-        "blended_lifetime_years": 70,                   # Weighted lifetime horizon
-        "blended_capital_share": 0.70,                  # Weighted civil capital share (70%)
-        "total_construction_co2_tonnes": 7_200.0        # Combined scope 3 construction carbon (5,000t + 2,200t)
-    },
+    # NOTE: the model does not read a "synergies" block. The combined (Stage 3 / static2)
+    # appraisal simply uses C_INV_STAGE1 + C_INV_STAGE2 = CHF 23.745M + CHF 15.045M = CHF 38.79M,
+    # and each package keeps its own lifetime, capital share and construction CO2 (5,000 t + 2,200 t).
+    # The estimated shell-construction saving (~CHF 72.8k, 1.65k -> 1.0k CHF/m2 for 112 m2) is
+    # therefore NOT applied; it is < 0.2 % of total CAPEX and reported qualitatively instead.
     "effects_outside_model": [
         "Land-use efficiency: freeing surface land for high-value Transit-Oriented Development by subterranean parking co-location",
-        "Regional multi-modal image elevation enhancing transit competitiveness against private cars"
+        "Regional multi-modal image elevation enhancing transit competitiveness against private cars",
+        "Shared underground shell construction saving (~CHF 72.8k), not deducted from CAPEX"
     ],
 }
 
@@ -415,7 +386,7 @@ STATE_LABELS = {
     0: "Baseline", 
     1: "Package 1 (Central Hub)", 
     2: "Package 2 (Access Network)", 
-    3: "Combined Hub Strategy"
+    3: "Combined Hub Strategy (Pkg 1 + Pkg 2 + synergies)"
 }
 STATE_COLORS = {0: "#9E9E9E", 1: "#FFC107", 2: "#2196F3", 3: "#4CAF50"}
 _STATE_COMPONENTS = {0: (False, False), 1: (True, False), 2: (False, True), 3: (True, True)}

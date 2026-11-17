@@ -6,3 +6,9 @@ data/transport/**/*.pkl filter=lfs diff=lfs merge=lfs -text
 data/transport/**/*.gz filter=lfs diff=lfs merge=lfs -text
 data/transport/**/*.parquet filter=lfs diff=lfs merge=lfs -text
 data/transport/**/*.zip filter=lfs diff=lfs merge=lfs -text
+
+# Jupyter notebooks — run `python setup_notebook_git.py` once per clone (see NOTEBOOK_GIT_SETUP.md).
+# filter=nbstripout       strip execution counts + metadata on commit (outputs kept)
+# diff/merge=jupyternotebook  notebook-aware diff and merge via nbdime
+# eol=lf                  same line endings on Windows/macOS, no whole-file diffs
+*.ipynb filter=nbstripout diff=jupyternotebook merge=jupyternotebook text eol=lf

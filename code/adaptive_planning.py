@@ -125,7 +125,7 @@ PLAN_DEFINITIONS = {
         "tunnel": None,
     },
     "static2": {
-        "name": "Static 2: First-Mile / Last-Mile Active Feeder Network",
+        "name": "Static 2: Combined Hub Strategy (Package 1 + Package 2 + synergies)",
         "initial_packages": ["stations", "tunnel"],
         "stations": None,
         "tunnel": None,
