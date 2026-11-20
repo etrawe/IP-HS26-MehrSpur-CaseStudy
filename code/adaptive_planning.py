@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 
 from parameters import (
+    HUB_CAPACITY,
     N_YEARS,
     NOMINAL_PARAMS,
     MAX_AVG_TT,
@@ -57,6 +58,7 @@ SIGNPOSTS = {
     "section_combined_daily": {"label": "Counting-section passengers/day", "unit": "passenger-trips/day"},
     "section_modeled_daily": {"label": "Modeled counting-section passengers/day", "unit": "passenger-trips/day"},
     "section_load_ratio": {"label": "Combined peak section load / comfort capacity", "unit": "ratio"},
+    "hub_load_ratio": {"label": "Forch hub load / design capacity", "unit": "ratio"},
     "pt_trips": {"label": "Peak-hour PT demand", "unit": "trips/peak hour"},
     "annual_pt_trips": {"label": "Annual PT demand", "unit": "trips/year"},
     "pt_share": {"label": "PT share of passenger-kilometres", "unit": "PKM share (0-1)"},
@@ -69,22 +71,33 @@ SIGNPOSTS = {
 }
 
 DEFAULT_TRIGGERS = {
-    # Trigger 1: Section demand -> package 1 (Central Mobility Hub)
+    # Both packages monitor the Forch station passenger count (parameters.SECTION,
+    # pt_stop "Forch", both directions) in passenger-trips/day. Package 1 uses the
+    # lower threshold so the hub is decided first under steady growth; Package 2
+    # needs a stronger, sustained increase. Either can still open first.
+    # Persistence 2: the count must exceed the threshold in two consecutive
+    # completed years. Notebook 04, Section 2.1 (scenario 4) showed that with
+    # persistence 1 a single-year demand spike committed both packages although
+    # demand then declined. The extra year still lets both packages open before
+    # Year 20 when decided by Year 12 (P1) / Year 10 (P2).
+    # Package coupling: opening Package 1 raises the Forch count itself (about
+    # +6 passenger-trips/day). This can push the count above Trigger 2, so the
+    # feeder network may be triggered partly by the hub's own success. This is
+    # intended ("a successful hub justifies the feeder"), but it means the two
+    # adaptive decisions are not fully independent; report it as such.
+    # Trigger 1 -> Package 1 (Forch Central Mobility Hub)
     "trigger1": {
-        "signpost":        "pt_trips",
-        "threshold":       125_000,
+        "signpost":        "section_combined_daily",
+        "threshold":       92,
         "persistence":     2,       # Consecutive years above threshold
-        "lead_time":       6,       # Years of planning and station civil works
+        "lead_time":       6,       # Planning, approval and construction (garage, square, bus terminal)
     },
-    # Trigger 2: Section demand -> package 2 (Active Feeder Network)
-    # An absolute daily count keeps the signpost comparable when package 1 adds
-    # capacity. The action threshold is separate from comfort capacity.
+    # Trigger 2 -> Package 2 (First-/Last-Mile Active Feeder Network)
     "trigger2": {
-        "signpost":        "pt_trips",
-        "threshold":       122_000,
+        "signpost":        "section_combined_daily",
+        "threshold":       110,
         "persistence":     2,
-        # Years of planning and construction after the decision.
-        "lead_time":       10,
+        "lead_time":       8,       # Cycleways, two grade-separated crossings (incl. A52) and Tempo 30
     }
 }
 
@@ -106,12 +119,20 @@ DEFAULT_TRIGGERS = {
 # Fixed years must fall within 1..N_YEARS. Trigger decisions use the previous
 # year's observation; opening occurs in decision year + lead_time.
 # Construction emissions are spread across that lead time, before opening.
-# Fixed/initial packages use the matching DEFAULT_TRIGGERS lead time (6/10 years)
+# Fixed/initial packages use the matching DEFAULT_TRIGGERS lead time (6/8 years)
 # unless their fixed rule specifies lead_time. Pre-horizon emissions are booked
 # at time zero, the start of Year 1, using its carbon price.
 # Costs come from parameters.py; physical effects and asset lives from stages.py.
 # Names and descriptions are generated below so timing edits need only one change.
 PLAN_DEFINITIONS = {
+    # Lead times: Package 1 = 6 years, Package 2 = 8 years (DEFAULT_TRIGGERS).
+    # A fixed opening in Year Y with lead time L implies a binding decision in
+    # Year Y - L. Predetermined plans are committed at the start (decision in
+    # Year 1 at the earliest), so Package 1 opens no earlier than Year 7 and
+    # Package 2 no earlier than Year 9. Both staged plans have both packages
+    # open before the PT-share requirement starts in Year 20.
+    # Static plans are a reference convention: their packages operate from Year 1
+    # and their construction emissions are booked before the horizon.
     "baseline": {
         "name": "Baseline Network",
         "initial_packages": [],
@@ -119,7 +140,7 @@ PLAN_DEFINITIONS = {
         "tunnel": None,
     },
     "static1": {
-        "name": "Static 1: Forch Central Mobility Hub Transformation",
+        "name": "Static 1: Forch Central Mobility Hub",
         "initial_packages": ["stations"],
         "stations": None,
         "tunnel": None,
@@ -130,20 +151,27 @@ PLAN_DEFINITIONS = {
         "stations": None,
         "tunnel": None,
     },
+    # Hub first: Package 1 decided in Year 1 (opens Year 7); Package 2 decided in
+    # Year 4 (opens Year 12), once the hub is under construction.
     "staged1": {
-        "name": "Staged 1",
+        "name": "Staged 1: Hub first, feeder network follows",
         "initial_packages": [],
-        "stations": {"type": "fixed", "opening_year": 8},
-        "tunnel": {"type": "fixed", "opening_year": 11},
+        "stations": {"type": "fixed", "opening_year": 7},
+        "tunnel": {"type": "fixed", "opening_year": 12},
     },
+    # Feeder first: Package 2 decided in Year 1 (opens Year 9); Package 1 decided
+    # in Year 9 (opens Year 15), still five years before the Year-20 requirement.
     "staged2": {
-        "name": "Staged 2",
+        "name": "Staged 2: Feeder network first, hub follows",
         "initial_packages": [],
-        "stations": {"type": "fixed", "opening_year": 6},
-        "tunnel": {"type": "fixed", "opening_year": 15},
+        "stations": {"type": "fixed", "opening_year": 15},
+        "tunnel": {"type": "fixed", "opening_year": 9},
     },
+    # Adaptive: no construction is committed at the start. Each package has its
+    # own trigger; either can open first or both can be built together. The only
+    # commitment at Year 0 is the option premium (C_FLEX per package).
     "flexible": {
-        "name": "Flexible",
+        "name": "Adaptive",
         "initial_packages": [],
         "stations": {"type": "trigger", "trigger": "trigger1"},
         "tunnel": {"type": "trigger", "trigger": "trigger2"},
@@ -496,6 +524,15 @@ def pt_asc_shift_trajectory(u: float | None = None, shape: str = "linear") -> np
 # 4. PLAN EVALUATION AND PATHWAY GENERATION
 # =============================================================================
 
+def hub_capacity_daily(stations_active: bool) -> float:
+    """Forch hub design capacity (model passenger-trips/day) for the operating state."""
+    base = float(HUB_CAPACITY["baseline_daily"])
+    increase = float(HUB_CAPACITY["package1_increase"])
+    if not np.isfinite(base) or base <= 0 or not np.isfinite(increase) or increase < 0:
+        raise ValueError("HUB_CAPACITY needs a positive baseline and a nonnegative increase.")
+    return base * (1.0 + increase) if stations_active else base
+
+
 def run_plan(plan_def: str | dict, stage_metrics: dict, params: dict | None = None,
              context=None, mode_results_by_stage: dict | None = None,
              corridor_municipalities: list | None = None, include_welfare: bool = False,
@@ -718,6 +755,11 @@ def run_plan_from_trajectories(plan_def: str  | dict, stage_metrics: dict, g_tra
             "car_trips": row.get("car_trips", 0.0),
             "annual_car_trips": row.get("car_trips", 0.0) * m.annualizers(year_params)["car"],
         })
+        # Hub-capacity indicator: Forch count relative to the hub design limit,
+        # which rises when Package 1 operates (parameters.HUB_CAPACITY).
+        hub_capacity = hub_capacity_daily(stations_active)
+        row["hub_capacity_daily"] = hub_capacity
+        row["hub_load_ratio"] = float(row.get("section_combined_daily", np.nan)) / hub_capacity
         # Credit the remaining asset value once, at the end of the horizon.
         # The investment basis includes the capital multiplier actually paid,
         # excludes option premiums/OPEX, and ages from the actual opening year.

@@ -1,0 +1,5 @@
+﻿parameter,shape
+PASSENGER_DEMAND_GROWTH,early
+PT_ASC_SHIFT,early
+EBIKE_SHARE,early
+ROAD_FREIGHT_GROWTH,linear

@@ -150,7 +150,7 @@ NOMINAL_PARAMS = {
     "OPEX_MULTIPLIER": 1.0,  # Multiplier on annual infrastructure operating/maintenance costs.
     "CAPEX_MULTIPLIER": 1.0,  # Multiplier on construction costs and upfront option premiums.
     # Flexibility Premium (for pre-engineering or reservation)
-    "C_FLEX": 50_000_000,  # Upfront CHF per adaptive package; two options are paid at time zero even if unused.
+    "C_FLEX": 2_000_000,  # Upfront CHF per adaptive package (~10% of package CAPEX: pre-planning, approvals, land reservation); paid at time zero even if unused.
 
     # -------------------------------------------------------------------------
     # Performance requirements and strategic mode-share indicators
@@ -283,6 +283,21 @@ EXTERNAL_FLOW_DEFAULTS = {  # Generic fallback; configure the project's EXTERNAL
    "additional_trips_daily": 0.0,        # Existing person-trips/weekday missing from the retained model.
    "growth": "general",                  # "general" demand growth or "fixed"
 }
+# Forch hub design capacity, used for the hub-capacity requirement in Notebook 04.
+# Units are the model's counting-section units (section_combined_daily,
+# passenger-trips/day, both directions), NOT observed station counts: the model
+# counts only the modeled population (about 88/day in Year 1). The limit is a
+# group assumption: the existing station facilities (platform access, bus bays,
+# bike/car parking) are taken to reach their design limit about 25% above the
+# Year-1 level. Package 1 (garage, new station square, bus terminal) is assumed
+# to raise that limit by 60%. Package 2 does not change hub capacity.
+# Replace both values if a design capacity from the station study becomes available.
+HUB_CAPACITY = {
+    "baseline_daily": 110.0,        # Existing hub design limit (model passenger-trips/day)
+    "package1_increase": 0.60,      # Fractional capacity increase once Package 1 operates
+}
+
+
 EXTERNAL_FLOW = {  # One cohort shared by baseline and projects, added after mode choice.
    **EXTERNAL_FLOW_DEFAULTS,
    "enabled": False,                     # Include this cohort's time costs and PT comfort loading.
